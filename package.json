@@ -11,7 +11,7 @@
     "contenido",
     "semestres"
   ],
-  "author": "Guastavo Ledesma",
+  "author": "Guastavo Ledesma Samudio",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",
