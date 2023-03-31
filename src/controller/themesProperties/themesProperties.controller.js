@@ -1,23 +1,23 @@
 const { sequelize } = require("../../connection");
-const { themesPropertiesModel } = require("../../model/themesProperties.model");
-const UserService = require('../../Service/users.service');
+const { ThemesPropertiesModel } = require("../../model/themesProperties.model");
+const ThemesPropertiesService = require('../../Service/themesProperties.service');
 const listar = async function (req, res) {
-    console.log("listar usuarios controller");
+    console.log("listar thmes prioperties controller");
 
     try {
        // 
-       const users = await UserService.listar(req.query.filtro || '');
+       const themes_properties = await ThemesPropertiesService.listar(req.query.filtro || '');
 
-        if (users) {
+        if (themes_properties) {
             // En users[0] se encuentra el listado de lo que se recupera desde el SQL
             res.json({
                 success: true,
-                usuarios: users
+                propiedadesTemas: themes_properties
             });
         } else {
             res.json({
                 success: true,
-                usuarios: []
+               propiedadesTemas: []
             });
         }
     } catch (error) {
@@ -30,21 +30,21 @@ const listar = async function (req, res) {
 };
 
 const consultarPorCodigo = async function (req, res) {
-    console.log("consultar usuarios");
+    console.log("consultar propiedades de temas");
 
     try {
         // Buscar en la base de datos por codigo
-        const userModelResult = await UserService.consultarPorCodigo(req.query.filtro || '');
+        const themesPropertiesModelResult = await ThemesPropertiesService.consultarPorCodigo(req.query.filtro || '');
 
-        if (userModelResult) {
+        if (themesPropertiesModelResult) {
             res.json({
                 success: true,
-                usuario: userModelResult
+                propiedadesTemas: themesPropertiesModelResult
             });
         } else {
             res.json({
                 success: true,
-                usuario: null
+                propiedadesTemas: null
             });
         }
     } catch (error) {
@@ -57,7 +57,7 @@ const consultarPorCodigo = async function (req, res) {
 };
 
 const actualizar = async function (req, res) {
-    console.log("actualizar usuarios controller");
+    console.log("actualizar propiedades de temas");
 
 
     // res.send("actualiza los usuarios")
@@ -68,14 +68,10 @@ const actualizar = async function (req, res) {
 
     try {
         
-    usuarioRetorno = await UserService.actualizar(
+    usuarioRetorno = await ThemesPropertiesService.actualizar(
         req.body.id, 
-        req.body.name, 
-        req.body.last_name,
-        req.body.avatar,
-        req.body.email,
-        req.body.password,
-        req.body.deleted);
+        req.body.property_name, 
+        req.body.property_value);
 
         res.json({
             success:true,
@@ -94,13 +90,13 @@ const actualizar = async function (req, res) {
 
 
 const eliminar = async function (req, res) {
-    console.log("eliminar usuarios");
+    console.log("eliminar propiedades de temas");
 
     // borrado fisico
    //  UserModel.destroy(req.params.id);
     try {
 
-        await sequelize.query("UPDATE users SET deleted = true WHERE id=  " + req.params.id);
+        await sequelize.query("UPDATE themes_properties SET deleted = true WHERE id=  " + req.params.id);
         res.json({
             success: true
         });

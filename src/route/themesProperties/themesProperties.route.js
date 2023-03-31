@@ -1,9 +1,9 @@
-const userController = require('../../controller/users/users.controller');
+const themesPropertiesController = require('../../controller/themesProperties/themesProperties.controller');
 
 module.exports = function(app) {
 
-    app.get("/users/list", userController.listar);
-    app.get("/user/:id", userController.busquedaPorCodigo);
-    app.post("/users/update", userController.actualizar);
-    app.delete("/users/delete/:id", userController.eliminar);
+    app.get("/themes_properties/list", themesPropertiesController.listar);
+    app.get("/themes_properties/:id", themesPropertiesController.busquedaPorCodigo);
+    app.post("/themes_properties/update", themesPropertiesController.actualizar);
+    app.delete("/themes_properties/delete/:id", themesPropertiesController.eliminar);
 }
