@@ -79,9 +79,6 @@ temaPropertiesRetorno = await themesPropertiesService.actualizar(req.body.id,
     }
 };
 
-
-
-
 const eliminar = async function(req, res){
     console.log("Eliminar propiedad del tema");
 
