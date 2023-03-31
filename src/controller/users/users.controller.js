@@ -1,6 +1,6 @@
 const { sequelize } = require("../../connection");
 const { UserModel } = require("../../model/user.model");
-const UserService = require('../../Service/users.service');
+const UserService = require('../../service/users.service');
 const listar = async function (req, res) {
     console.log("listar usuarios controller");
 
@@ -100,10 +100,17 @@ const eliminar = async function (req, res) {
    //  UserModel.destroy(req.params.id);
     try {
 
-        await sequelize.query("UPDATE users SET deleted = true WHERE id=  " + req.params.id);
+ await UserService.eliminar(req.params.filtro || "");
         res.json({
             success: true
-        });
+        })
+
+    /*    await sequelize.query("UPDATE users SET deleted = true WHERE id=  " + req.params.id);
+        res.json({
+            success: true
+        });*/
+
+
     } catch (error) {
         console.log(error);
         res.json({

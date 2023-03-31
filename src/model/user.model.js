@@ -34,6 +34,8 @@ deleted: {
     allowNull:false
 }
 }, {
+
+// Nombre de la tabla de la BD
     tableName: 'users',
     timestamps: false
 });

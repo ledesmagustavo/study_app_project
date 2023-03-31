@@ -1,116 +1,97 @@
-const{sequelize} = require("../connection");
-const {ThemeModel} = require('../../model/topic.model');
-const TopicService = require('../../service/topics.service')
+const { sequelize } = require("../../connection");
+const { TopicsModel } = require("../../model/topics.model");
 
+///cuando se trata de listar es mejor usar SQL puro por cuestion de tiempo
+const listar = async function (textoBuscar) {
 
-const listar = async function(req, res){
+    console.log("listar topicos");
 
+    try {
+        const topics = await sequelize.query(`SELECT * 
+        FROM topics
+        WHERE 1=1
+        AND UPPER(name) LIKE UPPER('%${textoBuscar}%')
+        AND deleted IS false
+        ORDER BY id`);
 
-        console.log("listar topicos");
-    
-        try {
-            const topics = await TopicService.listar(req.query.filtro || '');
-
-            if (topics) {                // en users[0] se encuentra el listado de lo que se recupera desde el sql
-               res.json({
-                success: true,
-                topico: topics
-               });
-
+        if (topics && topics[0]) {
+            // en users[0] se encuentra el listado de lo que se recupera desde el sql
+            return topics[0];
             } else{
-                res.json({
-                    success: true,
-                    topico: []
-            }  );
-        } 
-        
-        } catch (error) {
-            console.log(error)
-            res.json({
-                success:true,
-                topico: error.message
-            })
+                return [0];
             }
     
-    };
-    
-    const consultarPorCodigo = async function (req, res) {
-        console.log("consultar topicos por codigo");
-    
-        try {
-            const topicsModelResult = await TopicService.consultarPorCodigo(req.params.id);
-
-    
-            if (topicsModelResult) {
-               res.json({
-                success:true,
-                topico: topicsModelResult
-               });
-            
-            } else {
-               res.json({
-                success:true,
-                topico: null
-               });
-                }
-        } catch (error) {
-            console.log(error);
-            res.json({
-                success:true,
-                topico: error.message
-               });
-            }
-    };
-    
-    const actualizar = async function (req, res) {
-        console.log("actualizar topicos");
-        //res.send("actualizar de topicos");
-        let topicoRetorno = null; 
-        //guarda el topico que se va incluir o editar;    
-        try {
-            topicoRetorno= await TopicService.actualizar(req.body.id,
-                req.body.create_date,
-                req.body.name,
-                req.body.topic_id,
-                req.body.order,
-                req.body.priority,
-                req.body.color,
-                req.body.owner_user_id,
-                req.body.deleted );
-            
-
-           res.json({
-            success:true,
-            topico: topicoRetorno
-           })
-        } catch (error) {
-            console.log(error);
-            res.json({
-                success:true,
-                topico: error.message
-               })
+    } catch (error) {
+        console.log(error)
+        throw error;
         }
-    };
-    
-    const eliminar = async function (req, res) {
-        console.log("eliminar topicos");
-    
-        try {
-            await topic.TopicService.eliminar(req.params.id);
-         res.json({
-            success: true
-         });
-    
-        } catch (error) {
-    
-           console.log(error);
-           res.json({
-            success: true,
-            topico: error.message
-         });
+
+};
+
+const consultarPorCodigo = async function (id) {
+    console.log("consultar topicos por codigo");
+
+    try {
+        const topicsModelResult = await TopicsModel.findByPk(id);
+
+        if (topicsModelResult) {
+            return topicsModelResult;
+        
+        } else {
+           return null;
             }
-    };
-    
-    module.exports = {
-        listar, consultarPorCodigo, actualizar, eliminar
-    };
+    } catch (error) {
+        console.log(error);
+        throw error;
+        }
+};
+
+const actualizar = async function (id, create_date, name, topic_id, order, priority, color, owner_user_id, deleted) {
+    console.log("actualizar topicos");
+    //res.send("actualizar de topicos");
+    let topicoRetorno = null; //guarda el topico que se va incluir o editar;
+    const data = {id, create_date, name, topic_id, order, priority, color, owner_user_id, deleted}; //se obtiene los datos del cuerpo de la peticion
+
+    try {
+        let topicoExiste = null;
+        if (id) {
+            topicoExiste = await TopicsModel.findByPk(id);
+        }
+        if (topicoExiste) {
+            topicoRetorno = await TopicsModel.update(data, { where: { id: id } });
+            topicoRetorno = data;
+        } else {
+            topicoRetorno = await TopicsModel.create(data);
+
+        }
+       return topicoRetorno;
+    } catch (error) {
+        console.log(error);
+       throw error;
+    }
+};
+
+const eliminar = async function (id) {
+    console.log("eliminar topicos");
+
+    try {
+        TopicsModel.destroy( { where: { id: codigo, topic_id: codigo }}, { truncate: false });
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+
+   /* try {
+        await sequelize.query("UPDATE topics SET deleted=true WHERE id = " + id);
+      return;
+
+    } catch (error) {
+
+       console.log(error);
+       throw error;
+        }*/
+};
+
+module.exports = {
+    listar, consultarPorCodigo, actualizar, eliminar
+};

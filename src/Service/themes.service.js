@@ -1,5 +1,5 @@
 const{sequelize} = require("../connection");
-const {UserModel} = require("../model/user.model");
+const {ThemesModel} = require("../model/themes.model");
 
 const listar = async function(textoBuscar){
 
@@ -26,12 +26,12 @@ const listar = async function(textoBuscar){
     }
 };
 
-const consultarPorCodigo = async function (req, res) {
+const consultarPorCodigo = async function (id) {
     console.log("consultar temas por codigo");
 
     try {
         // Buscar en la base de datos por codigo
-        const themesModelResult = await themeModel.findByPk(req.params.id);
+        const themesModelResult = await ThemesModel.findByPk(id);
 
         if (themesModelResult) {
            return themesModelResult
@@ -52,7 +52,7 @@ const actualizar = async function (create_date, name, descripcion, keywords, own
 
     // res.send("actualiza los usuarios")
     // variables
-    let usuarioRetorno = null; // guarda el usuario que se va incluir o editar
+    let themesRetorno = null; // guarda el usuario que se va incluir o editar
    const data = {create_date, name, descripcion, keywords, owner_user_id, deleted};
    // const id = req.body.id;
 
@@ -60,19 +60,19 @@ const actualizar = async function (create_date, name, descripcion, keywords, own
         
     let themeExiste = null;
     if (id) {
-        themeExiste = await ThemeModel.findByPk(id);
+        themeExiste = await ThemesModel.findByPk(id);
 
     }
     if (themeExiste) {
         // asegurar que el usuario existe, entonces actualizar
-        usuarioRetorno = await ThemeModel.update(data, { where : {id:id}});
-        usuarioRetorno = data;
+        themesRetorno = await ThemesModel.update(data, { where : {id:id}});
+        themesRetorno = data;
 
     } else { // incluir
-        themeRetorno = await ThemeModel.create(data);
+        themesRetorno = await ThemesModel.create(data);
 
     }
-    return themeRetorno;
+    return themesRetorno;
 
     } catch (error) {
         console.log(error);
@@ -86,12 +86,9 @@ const eliminar = async function (id) {
 
     // borrado fisico
    //  UserModel.destroy(req.params.id);
-    try {
-
-        await sequelize.query("UPDATE themes SET deleted = true WHERE id=  " + id);
-       return;
-    
-    } catch (error) {
+   try {
+    ThemesModel.destroy ({ where : { id: codigo } }, { truncate: false });
+} catch (error) {
         console.log(error);
         throw error;
         }
